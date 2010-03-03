@@ -14,27 +14,30 @@ var
   JSLINT = require('./fulljslint');
 
 var jslint_options = {
-    bitwise: true,
-    eqeqeq: true,
-    immed: true,
-    newcap: true,
-    nomen: true,
-    onevar: true,
-    plusplus: true,
-    regexp: true,
-    rhino: true,
-    undef: true,
-    white: true
+  bitwise: true,
+  eqeqeq: true,
+  immed: true,
+  newcap: true,
+  nomen: true,
+  onevar: true,
+  plusplus: true,
+  regexp: true,
+  rhino: true,
+  undef: true,
+  white: true,
+
+  indent: 2,
+  predef: ['$', 'window']
 };
 
 function formatErrors(errors) {
-  var output = [];
+  var output = [], i, e;
   function write(s) {
     output.push(s + '\n');
   }
 
-  for (var i = 0; errors[i]; i++) {
-    var e = errors[i];
+  for (i = 0; errors[i]; i++) {
+    e = errors[i];
     write(e.line + ":" + e.character + ":" + e.reason);
   }
   return output.join('');
@@ -42,7 +45,7 @@ function formatErrors(errors) {
 
 var server = http.createServer(function (req, res) {
   function malformed() {
-    res.writeHeader(400, {"content-type":"text/plain"});
+    res.writeHeader(400, {"content-type": "text/plain"});
     res.close();
   }
 
@@ -50,8 +53,8 @@ var server = http.createServer(function (req, res) {
     mp = multipart.parse(req),
     buf = [];
 
-  if (req.headers["expect"] &&
-      req.headers["expect"].indexOf("100-continue") >= 0) {
+  if (req.headers.expect &&
+      req.headers.expect.indexOf("100-continue") >= 0) {
     res.write("");
     res.write("HTTP/1.1 100 Continue\r\n\r\n");
   }
@@ -67,7 +70,7 @@ var server = http.createServer(function (req, res) {
     buf.push(chunk);
   });
   mp.addListener("complete", function () {
-    data = buf.join("");
+    var data = buf.join(""), lint;
 
     JSLINT.JSLINT(data, jslint_options);
     lint = formatErrors(JSLINT.JSLINT.errors);
