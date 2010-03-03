@@ -26,7 +26,7 @@
   :type 'string
   :group 'flymake-jslint)
 
-(defcustom lintnode-port 3003
+(defcustom lintnode-port 8000
   "The port the lintnode server runs on."
   :type 'integer
   :group 'flymake-jslint)
@@ -36,7 +36,8 @@
 Uses `lintnode-node-program' and `lintnode-location'."
   (interactive)
   (start-process "lintnode-server" "*lintnode*"
-                 lintnode-node-program (concat lintnode-location "/app.js")
+                 lintnode-node-program
+                 (expand-file-name (concat lintnode-location "/app.js"))
                  "--port" (number-to-string lintnode-port)))
 
 (defun flymake-jslint-init ()
@@ -45,11 +46,8 @@ Uses `lintnode-node-program' and `lintnode-location'."
          (local-file (file-relative-name
 		      temp-file
 		      (file-name-directory buffer-file-name)))
-         (jslint-url (format "http://127.0.0.1:%d/jslint" lintnode-port)))
-    (list "curl" (list "--form" (format "source=<%s" local-file)
-                       "--form" (format "filename=%s" local-file)
-                       ;; FIXME: For some reason squid hates this curl invocation.
-                       "--proxy" ""
+         (jslint-url (format "http://127.0.0.1:%d" lintnode-port)))
+    (list "curl" (list "--form" (format "source=<%s" temp-file)
                        jslint-url))))
 
 (setq flymake-allowed-file-name-masks
@@ -60,8 +58,8 @@ Uses `lintnode-node-program' and `lintnode-location'."
 	    flymake-allowed-file-name-masks))
 
 (setq flymake-err-line-patterns 
-      (cons '("^Lint at line \\([[:digit:]]+\\) character \\([[:digit:]]+\\): \\(.+\\)$"  
+      (cons '("\\([[:digit:]]+\\):\\([[:digit:]]+\\):\\(.+\\)$"  
 	      nil 1 2 3)
 	    flymake-err-line-patterns))
 
-(provide 'flymake-jslint)
+(provide 'flymake-lintnode)
