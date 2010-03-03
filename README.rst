@@ -8,17 +8,12 @@ faster?
 
 Then I caught a talk on the `node.js`_ server, and saw a way.
 
-In my environment, this cuts jslint invocation time in half.
-
-This project also depends on the Express_ framework.
-
 The ``jslint.curl`` script depends on curl, but you can easily
 reproduce it with any other http client.
 
 .. _flymake-mode: http://www.emacswiki.org/emacs/FlymakeJavaScript
 .. _JSLint: http://www.jslint.com/
 .. _node.js: http://nodejs.org/
-.. _Express: http://wiki.github.com/visionmedia/express/
 
 
 Usage
@@ -26,8 +21,7 @@ Usage
 
 ::
 
-  $ node lintnode/app.js --port 3003 &
-  Express started at http://localhost:3003/ in development mode
+  $ node lintnode/app.js --port 8000 &
 
   $ lintnode/jslint.curl myfilthycode.js
 
@@ -49,8 +43,10 @@ See the included `flymake-jslint.el`__.
 Configuration
 -------------
 
+# TODO - Add this to new server
+#
 `jslint_port` may be passed on the node command line with the
-``--port`` parameter.  It defaults to 3003.
+``--port`` parameter.  It defaults to 8000.
 
 `jstlint_options` is currently only configurable by editing
 ``app.js``.  For documentation on JSLint's options, see `JSLint
