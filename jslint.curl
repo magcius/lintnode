@@ -1,5 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # A faster way to jslint; curl's start-up cost is much lower than rhino's.
-JSLINT_URL="http://localhost:3003/jslint"
-exec curl --form source="<${1}" --form filename="${1}" ${JSLINT_URL}
-#exec curl --form source="@${1}" ${JSLINT_URL}
+JSLINT_URL="http://localhost:8000/jslint"
+exec curl --form source="<${1}" ${JSLINT_URL}
