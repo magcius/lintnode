@@ -1,5 +1,5 @@
 // jslint.js
-// 2010-01-20
+// 2010-03-02
 
 /*
 Copyright (c) 2002 Douglas Crockford  (www.JSLint.com)
@@ -2209,7 +2209,8 @@ loop:   for (;;) {
 
     function reservevar(s, v) {
         return reserve(s, function () {
-            if (this.id === 'this' || this.id === 'arguments') {
+            if (this.id === 'this' || this.id === 'arguments' || 
+                    this.id === 'eval') {
                 if (strict_mode && funct['(global)']) {
                     warning("Strict violation.", this);
                 } else if (option.safe) {
@@ -2458,9 +2459,6 @@ loop:   for (;;) {
         if (!noindent) {
             indentation();
         }
-        if (nexttoken.id === 'new') {
-            warning("'new' should not be used as a statement.");
-        }
         r = parse(0, true);
 
 // Look for the final semicolon.
@@ -2470,6 +2468,8 @@ loop:   for (;;) {
                 warning(
 "Expected an assignment or function call and instead saw an expression.",
                         token);
+            } else if (r.id === '(' && r.left.id === 'new') {
+                warning("Do not use 'new' for side effects.");
             }
             if (nexttoken.id !== ';') {
                 warningAt("Missing semicolon.", token.line,
@@ -3510,7 +3510,9 @@ loop:   for (;;) {
             if (ids[u] === true) {
                 warning("Duplicate id='{a}'.", nexttoken, v);
             }
-            if (option.adsafe) {
+            if (!/^[A-Za-z][A-Za-z0-9._:\-]*$/.test(v)) {
+                warning("Bad id: '{a}'.", nexttoken, v);
+            } else if (option.adsafe) {
                 if (adsafe_id) {
                     if (v.slice(0, adsafe_id.length) !== adsafe_id) {
                         warning("ADsafe violation: An id must have a '{a}' prefix",
@@ -3524,7 +3526,7 @@ loop:   for (;;) {
                         warning("ADSAFE violation: bad id.");
                     }
                 }
-            }
+            }  
             x = v.search(dx);
             if (x >= 0) {
                 warning("Unexpected character '{a}' in {b}.", token, v.charAt(x), a);
@@ -4635,8 +4637,8 @@ loop:   for (;;) {
             nonadjacent(token, nexttoken);
         }
         doFunction(i);
-        if (funct['(loopage)'] && nexttoken.id !== '(') {
-            warning("Be careful when making functions within a loop. Consider putting the function in a closure.");
+        if (funct['(loopage)']) {
+            warning("Don't make functions within a loop.");
         }
         return this;
     });
@@ -5492,7 +5494,7 @@ loop:   for (;;) {
     };
     itself.jslint = itself;
 
-    itself.edition = '2010-01-20';
+    itself.edition = '2010-03-02';
 
     return itself;
 
