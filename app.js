@@ -74,8 +74,8 @@ var server = http.createServer(function (req, res) {
 
     JSLINT.JSLINT(data, jslint_options);
     lint = formatErrors(JSLINT.JSLINT.errors);
-    res.writeHeader(200, {"Content-Type": "text/plain",
-                          "Content-Length": lint.length});
+    res.writeHead(200, {"Content-Type": "text/plain",
+                        "Content-Length": lint.length});
     res.write(lint);
     res.close();
   });
